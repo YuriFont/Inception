@@ -62,3 +62,14 @@ setup-devd udev
 rc-update add elogind
 rc-update add lightdm
 reboot
+
+Criando os arquivos necessários
+
+Para redefinir os donos de diretórios e arquivos = chown yufonten:yufonten <directory>
+
+Tipos de permissões que vamos encontrar:
+
+chmod 775
+chmod 1777
+chmo 664
+chmo 644
