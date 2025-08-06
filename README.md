@@ -63,6 +63,17 @@ rc-update add elogind
 rc-update add lightdm
 reboot
 
+Instalando e configurando o Docker:</br>
+sudo apk update
+ sudo apk add docker docker-compose
+ sudo apk add --update docker openrc
+ sudo rc-update add docker boot
+ sudo service docker start</br>
+
+ Adicionar o seu usuário ao grupo docker para rodas os comandos sem o sudo:  sudo adduser <username> docker
+
+Instalação do comand line do Docker Compose:  sudo apk add docker-cli-compose
+
 Criando os arquivos necessários
 
 Para redefinir os donos de diretórios e arquivos = chown yufonten:yufonten <directory>
@@ -73,3 +84,7 @@ chmod 775
 chmod 1777
 chmo 664
 chmo 644
+
+Dockerfile - MariaDB</br>
+<img width="677" height="607" alt="image" src="https://github.com/user-attachments/assets/8ce438ff-fd94-478f-bfd6-7357611b24ac" /></br>
+
