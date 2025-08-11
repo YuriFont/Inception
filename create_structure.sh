@@ -5,7 +5,7 @@ USER="yufonten"
 GROUP="yufonten"
 
 # Criar diretórios e arquivos
-mkdir -p ./srcs/requirements/{bonus,mariadb/conf,mariadb/tools,nginx/conf,nginx/tools,tools,wordpress}
+mkdir -p ./srcs/requirements/{bonus,tools,mariadb/conf,mariadb/tools,nginx/conf,nginx/tools,wordpress/conf,wordpress/tools}
 
 # Criar arquivos na raiz
 touch ./Makefile
@@ -18,6 +18,9 @@ touch ./srcs/requirements/mariadb/Dockerfile ./srcs/requirements/mariadb/.docker
 
 # Criar arquivos em ./srcs/requirements/nginx
 touch ./srcs/requirements/nginx/Dockerfile ./srcs/requirements/nginx/.dockerignore
+
+# Criar arquivos em ./srcs/requirements/wordpress
+touch ./srcs/requirements/wordpress/Dockerfile ./srcs/requirements/wordpress/.dockerignore
 
 # Definir permissões e dono para diretórios
 find . -type d -exec chmod 775 {} \;
