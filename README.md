@@ -88,3 +88,14 @@ chmo 644
 Dockerfile - MariaDB</br>
 <img width="677" height="607" alt="image" src="https://github.com/user-attachments/assets/8ce438ff-fd94-478f-bfd6-7357611b24ac" /></br>
 
+Caso seja necessário atualizar o kernel
+
+# Instale o kernel linux-lts
+sudo apk add linux-lts
+
+# Atualize o GRUB (ou equivalente no Alpine) para usar o novo kernel
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+# Reinicie o sistema para carregar o novo kernel
+sudo reboot
+
