@@ -99,9 +99,26 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 # Reinicie o sistema para carregar o novo kernel
 sudo reboot
 
+# Tentando com Debian
+
 Link para última versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
 
 Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
+
+## Instalando docker e docker compose v2
+
+sudo apt update
+sudo apt install -y ca-certificates curl gnupg lsb-release
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+docker --version
+docker compose version
+
 
 
 
