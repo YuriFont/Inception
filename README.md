@@ -98,6 +98,8 @@ Link para última versão estável do Debian: https://cdimage.debian.org/cdimage
 # Atualize o GRUB (ou equivalente no Alpine) para usar o novo kernel
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
+Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
+
 # Reinicie o sistema para carregar o novo kernel
 sudo reboot
 
