@@ -93,6 +93,8 @@ Caso seja necessário atualizar o kernel
 # Instale o kernel linux-lts
 sudo apk add linux-lts
 
+Link para última versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
+
 # Atualize o GRUB (ou equivalente no Alpine) para usar o novo kernel
 sudo grub-mkconfig -o /boot/grub/grub.cfg
 
