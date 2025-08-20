@@ -121,6 +121,11 @@ docker compose version
 ### Adicionando o usuário no gruopo do docker
 sudo usermod -aG docker $USER
 
+### Binding para que o localhost se resolva com o endereço pedido no subject
+Dentro de /etc/hosts deve ter isso:
+<img width="570" height="191" alt="image" src="https://github.com/user-attachments/assets/c1ed7a37-7208-4e61-82de-a3f0acfcd3e7" />
+
+
 
 
 
