@@ -101,28 +101,38 @@ sudo reboot
 
 # Tentando com Debian
 
-Link para última versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
+Link para penúltima versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
 
 Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
 
 ## Instalando docker e docker compose v2
 
 sudo apt update 
+
 sudo apt install -y ca-certificates curl gnupg lsb-release
+
 sudo mkdir -p /etc/apt/keyrings
+
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  
 sudo apt update
+
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 docker --version
+
 docker compose version
+
 ### Adicionando o usuário no gruopo do docker
 sudo usermod -aG docker $USER
 
 ### Binding para que o localhost se resolva com o endereço pedido no subject
 Dentro de /etc/hosts deve ter isso:
+
 <img width="570" height="191" alt="image" src="https://github.com/user-attachments/assets/c1ed7a37-7208-4e61-82de-a3f0acfcd3e7" />
 
 ### Gerando os certificados TSL e dando permissão
@@ -133,7 +143,9 @@ openssl req -x509 -nodes -days 365 \
   -keyout srcs/requirements/nginx/certs/privkey.pem \
   -out srcs/requirements/nginx/certs/fullchain.pem \
   -subj "/CN=yufonten.42.fr"
+  
 chmod 600 srcs/requirements/nginx/certs/privkey.pem
+
 chmod 644 srcs/requirements/nginx/certs/fullchain.pem
 
 
