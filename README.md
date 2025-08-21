@@ -107,7 +107,7 @@ Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
 
 ## Instalando docker e docker compose v2
 
-sudo apt update
+sudo apt update 
 sudo apt install -y ca-certificates curl gnupg lsb-release
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
