@@ -1,0 +1,81 @@
+services:
+  nginx:
+    build: requirements/nginx/.
+    image: nginx
+    container_name: nginx
+    depends_on:
+      - wordpress
+      - mariadb
+    ports:
+      - "443:443"
+    volumes:
+      - /home/yufonten/data/wordpress:/var/www/html
+      - ./requirements/nginx/certs:/etc/nginx/certs:ro
+      - ./requirements/nginx/conf:/etc/nginx/conf.d:ro
+    environment:
+      - SERVER_NAME=yufonten.42.fr
+    networks:
+      - inception
+    restart: always
+
+  wordpress:
+    build: requirements/wordpress/.
+    image: wordpress
+    container_name: wp-php
+    depends_on:
+      - mariadb
+    volumes:
+      - /home/yufonten/data/wordpress:/var/www/html
+    environment:
+      - SERVER_NAME=${SERVER_NAME}
+      - WP_URL=${WP_URL}
+      - WP_TITLE=${WP_TITLE}
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD_FILE=/run/secrets/wp_db_password
+      - WP_ADMIN_USER=${WP_ADMIN_USER}
+      - WP_ADMIN_PASSWORD_FILE=/run/secrets/wp_admin_password
+      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      - WP_USER2=${WP_USER2}
+      - WP_USER2_PASSWORD_FILE=/run/secrets/wp_user2_password
+      - WP_USER2_EMAIL=${WP_USER2_EMAIL}
+      - WP_USER2_ROLE=${WP_USER2_ROLE}
+    secrets:
+      - wp_db_password
+      - wp_admin_password
+      - wp_user2_password
+    networks:
+      - inception
+    restart: always
+
+  mariadb:
+    build: requirements/mariadb/.
+    image: mariadb
+    container_name: mariadb
+    volumes:
+      - /home/yufonten/data/mariadb:/var/lib/mysql
+    environment:
+      - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_USER=${DB_USER}
+      - MARIADB_PASSWORD_FILE=/run/secrets/wp_db_password
+      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+    secrets:
+      - wp_db_password
+      - db_root_password
+    networks:
+      - inception
+    restart: always
+
+networks:
+  inception:
+
+secrets:
+  wp_db_password:
+    file: ../secrets/wp_db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  wp_admin_password:
+    file: ../secrets/wp_admin_password.txt
+  wp_user2_password:
+    file: ../secrets/wp_user2_password.txt
