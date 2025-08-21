@@ -125,6 +125,16 @@ sudo usermod -aG docker $USER
 Dentro de /etc/hosts deve ter isso:
 <img width="570" height="191" alt="image" src="https://github.com/user-attachments/assets/c1ed7a37-7208-4e61-82de-a3f0acfcd3e7" />
 
+### Gerando os certificados TSL e dando permissão
+
+mkdir -p srcs/requirements/nginx/certs
+openssl req -x509 -nodes -days 365 \
+  -newkey rsa:2048 \
+  -keyout srcs/requirements/nginx/certs/privkey.pem \
+  -out srcs/requirements/nginx/certs/fullchain.pem \
+  -subj "/CN=yufonten.42.fr"
+chmod 600 srcs/requirements/nginx/certs/privkey.pem
+chmod 644 srcs/requirements/nginx/certs/fullchain.pem
 
 
 
