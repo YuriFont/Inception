@@ -166,6 +166,8 @@ sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin d
 ### Adicionando o usuário no gruopo do docker
 sudo usermod -aG docker $USER
 
+newgrp docker
+
 ### Verifique as versões
 docker --version
 
