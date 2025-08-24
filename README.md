@@ -1,141 +1,182 @@
 # Inception
 
-https://dl-cdn.alpinelinux.org/alpine/v3.21/releases/x86_64/
+Link para penúltima versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
 
-Fazer login a primeira vez com root
+## Criando a VM
 
-Começar setup com comando "setup-alpine"
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/deb34cd7-4144-4020-aa88-0f0cdcefb1fe" />
 
-system hostname = username.42.fr
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/f612f76d-5ba3-4b88-85ee-9026e4d9eb22" />
 
-proxy = none
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/35348b9c-c1d2-490f-8251-587cafbc782c" />
 
-criar usuário = username
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/8039e80f-4d28-44e5-a6c5-d010a30aa39d" />
 
-disk session -
-sda,
-sys,
-y
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/afe03d28-0400-46fb-ad6a-9c19426471c4" />
 
-Retirar a iso antes de usar comando reboot</br>
-<img width="586" height="344" alt="image" src="https://github.com/user-attachments/assets/d925313a-c8ca-4e97-9a23-22838a098558" />
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/5b233951-2faf-40ef-8e64-b907a1210bb3" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/f149b71a-cbd2-443b-b2d4-c311a3e86ac2" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/eb637b59-44f3-4839-b8fd-6fe140c1f514" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/b3dd8c34-6d19-4397-969a-afd7697f280d" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/16e7fcfe-1da4-4223-b805-9931147ca14d" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/9fa60e49-f13e-4df8-aaaa-614dfe04a6c3" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/65557638-2864-4595-9b26-0975b8639518" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/dd5cfaf3-d5e0-4adb-adc4-a91bb59b0c74" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/679242ea-809d-42c9-a4b4-90737c18046e" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/bf01117a-4080-49fd-bd7d-9da5fbae2f60" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/8b6292aa-d55a-4668-a35e-9f1536618744" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/a89a84c7-2d3c-4283-b1b5-b7af329cb04b" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/1d8a3139-63de-4e9f-9a2c-9f6b3ca886e7" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/e29f055d-4839-4174-92fc-fa72c2566797" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/727a3371-60bc-4757-a1be-a2e6c63e6655" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/90f9cbad-8e4c-404f-b77b-7f26eb97956a" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/27ff5472-fdf3-40e4-9019-82d141953092" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/ae9dd95c-c932-4a96-a1b9-a7f64b386370" />
+
+<p>Aqui antes de clicar em continuar verifique se o "Device 0" está realmente sem a imagem .iso. Dessa forma quando reiniciar ele não voltara ao menu de instalação e sim iniciará da forma correta. Se ainda estiver com a ISO remova.</p>
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/96c920b5-6c63-48fb-8e8b-b2901e0b53fa" />
+
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/53be3131-1c1f-4ed8-ac44-6f935126473b" />
 
 
-Instalando o sudo</br>
-Primeiro descomentar a linha alpine.mirror.wearetriple. om/v3/18/community em vi /etc/apk/repositories. Assim permitindo puxar pacotes de outros repositório.
+Se tudo ocorrer bem o sistema será reiniciado. Vamos agora para as configurações antes de iniciar o projeto.
 
-Depois usar esses comandos:
-su -
-apk update
-apk add sudo
-sudo visudo
+## Configurando sudo e atualizando pacotes
 
-Descomente essa linha.</br><img width="528" height="313" alt="image" src="https://github.com/user-attachments/assets/b48da186-9239-495c-8e85-233c31979e45" />
-Agora adicione o seu usuário ao rupo do sudo:
-addgroup sudo
-adduser yufonten sudo
+Abra o terminal e use os comandos:
+
+su
+
+sudo vi /etc/apt/sources.list
+
+Comente a primeira linha</br>
+<img width="551" height="328" alt="image" src="https://github.com/user-attachments/assets/27eba4be-9640-4c4b-be18-f09193f827f5" />
 
 
-Instalando o SSH
+Cole isso em /etc/apt/sources.list para conseguir usar o comando apt da forma correta e instalar os pacotes:
 
-sudo apk update
-sudo apk add vim
+```
+deb http://deb.debian.org/debian/ bookworm main non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm main non-free-firmware
+
+deb http://security.debian.org/debian-security bookworm-security main non-free-firmware
+deb-src http://security.debian.org/debian-security bookworm-security main non-free-firmware
+
+# bookworm-updates, to get updates before a point release is made;
+# see https://www.debian.org/doc/manuals/debian-reference/ch02.en.html#_updates_and_backports
+deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm-updates main non-free-firmware
+```
+
+Agora atualize os pacotes: sudo apt update && apt upgrade
+
+### Colocando o usuário padrão no grupo sudo
+
+Entre no super usuário:
+
+su
+
+E utilize esse comando:
+
+sudo vim /etc/sudoers
+
+Você encontrará um linha como essa:</br>
+
+<img width="387" height="74" alt="image" src="https://github.com/user-attachments/assets/5139327a-cbd5-4b39-a5cf-0a9af39a6803" />
+
+Adicione logo abaixo uma linha com o seu usuário:
+
+<usuário> ALL=(ALL:ALL) ALL
+
+Agora o seu usuário poderá usar o comando sudo
+
+## Instalando o SSH
+
+Essa parte é opcional. Porém eu acho mais fácil ir configurando o projeto pelo terminal da máquina real do que ficar usando a Vm em si.
+
+Instale o OpenSSH:
+```
+sudo apt update
+sudo apt install openssh-server -y
+```
+Verifique se está rodando:
+```
+sudo systemctl status ssh
+
+#Para ativar
+sudo systemctl start ssh
+
+#Para configurar a inicialização junto ao sistema
+sudo systemctl enable ssh
+```
+
+Edite o arquivo de configuração:
+
 sudo vim /etc/ssh/sshd_config
 
-Depois de abrir o arquivo descomente a porta e altere para uma da sua escolha ex: 4242</br><img width="517" height="337" alt="image" src="https://github.com/user-attachments/assets/bfdaa23a-1a20-4b7b-a4c9-91fd14c4e1fc" />
+Depois de abrir o arquivo descomente a porta e altere para uma da sua escolha ex: 4242
+</br><img width="517" height="337" alt="image" src="https://github.com/user-attachments/assets/bfdaa23a-1a20-4b7b-a4c9-91fd14c4e1fc" />
 
 Agora vamos acessar a sudo vi /etc/ssh/ssh_config/ e também descomentar a porta</br><img width="521" height="397" alt="image" src="https://github.com/user-attachments/assets/3094628c-f757-4a3f-a6e3-63eaa046cea2" />
 
-reinicie o serviço: sudo rc-service sshd restart
-
-e check para ver se está funcionando: netstat -tuln | grep 4242
-
 Agora vamos adicionar a porta na VM</br><img width="507" height="336" alt="image" src="https://github.com/user-attachments/assets/f6045a51-6acd-457d-8848-1c7fafc40e79" />
 <img width="586" height="381" alt="image" src="https://github.com/user-attachments/assets/8435638a-b09f-4e0c-b05e-62c96afe4164" />
+
+Reinicie o serviço:
+
+```
+sudo systemctl restart ssh
+```
+
 Agora é só conectar usando ssh yufonten@localhost -p 4242
 
-Instalando os pacotes gráficos do alpine
-
-sudo apk add xorg-server xfce4 xfce4-terminal lightdm lightdm-gtk-greeter xf86-input-libinput elogind
-
-setup-devd udev
-rc-update add elogind
-rc-update add lightdm
-reboot
-
-Instalando e configurando o Docker:</br>
-sudo apk update
- sudo apk add docker docker-compose
- sudo apk add --update docker openrc
- sudo rc-update add docker boot
- sudo service docker start</br>
-
- Adicionar o seu usuário ao grupo docker para rodas os comandos sem o sudo:  sudo adduser <username> docker
-
-Instalação do comand line do Docker Compose:  sudo apk add docker-cli-compose
-
-Criando os arquivos necessários
-
-Para redefinir os donos de diretórios e arquivos = chown yufonten:yufonten <directory>
-
-Tipos de permissões que vamos encontrar:
-
-chmod 775
-chmod 1777
-chmo 664
-chmo 644
-
-Dockerfile - MariaDB</br>
-<img width="677" height="607" alt="image" src="https://github.com/user-attachments/assets/8ce438ff-fd94-478f-bfd6-7357611b24ac" /></br>
-
-Caso seja necessário atualizar o kernel
-
-# Instale o kernel linux-lts
-sudo apk add linux-lts
-
-# Atualize o GRUB (ou equivalente no Alpine) para usar o novo kernel
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-# Reinicie o sistema para carregar o novo kernel
-sudo reboot
-
-# Tentando com Debian
-
-Link para penúltima versão estável do Debian: https://cdimage.debian.org/cdimage/archive/12.7.0/amd64/iso-dvd/
-
-Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
 
 ## Instalando docker e docker compose v2
 
-sudo apt update 
-
+```
+sudo apt update
 sudo apt install -y ca-certificates curl gnupg lsb-release
-
 sudo mkdir -p /etc/apt/keyrings
-
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
 echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  
 sudo apt update
-
 sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-docker --version
-
-docker compose version
+```
 
 ### Adicionando o usuário no gruopo do docker
 sudo usermod -aG docker $USER
+
+### Verifique as versões
+docker --version
+
+docker compose version
 
 ### Binding para que o localhost se resolva com o endereço pedido no subject
 Dentro de /etc/hosts deve ter isso:
 
 <img width="570" height="191" alt="image" src="https://github.com/user-attachments/assets/c1ed7a37-7208-4e61-82de-a3f0acfcd3e7" />
 
-### Gerando os certificados TSL e dando permissão
+## Gerando os certificados TSL e dando permissão
 
 mkdir -p srcs/requirements/nginx/certs
 openssl req -x509 -nodes -days 365 \
@@ -148,7 +189,8 @@ chmod 600 srcs/requirements/nginx/certs/privkey.pem
 
 chmod 644 srcs/requirements/nginx/certs/fullchain.pem
 
+### Caso seja necessário resetar a keygen-ssh (comando para windows)
 
-
+Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
 
 
