@@ -5,7 +5,10 @@ USER="yufonten"
 GROUP="yufonten"
 
 # Criar diretórios e arquivos
-mkdir -p ./srcs/requirements/{bonus,tools,mariadb/conf,mariadb/tools,nginx/conf,nginx/tools,wordpress/conf,wordpress/tools}
+mkdir -p ./srcs/requirements/{mariadb/conf,mariadb/tools,nginx/conf,nginx/tools,wordpress/conf,wordpress/tools}
+
+# Criar o diretório secrets
+mkdir ./secrets
 
 # Criar arquivos na raiz
 touch ./Makefile
