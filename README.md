@@ -178,20 +178,41 @@ Dentro de /etc/hosts deve ter isso:
 
 <img width="570" height="191" alt="image" src="https://github.com/user-attachments/assets/c1ed7a37-7208-4e61-82de-a3f0acfcd3e7" />
 
+## Criando os arquivos necessários e dando permissões a eles
+
+Criei um shell script que cria os arquivos que aparecem no subject, ainda não sei muito bem se podemos usar mais pastas do que tem descrido lá. De qualquer forma, esse escript vai criar as pastas e arquivos que estão descritos e dar a permissão necessária a eles.
+
+Basta ir para a home do seu usuário e criar o diretório inception:
+```
+mkdir inception
+```
+
+Depois, já dentro do diretório iremos criar o script create_structure.sh:
+```
+vim create_structure.sh
+sudo chmod +x create_structure.sh
+./create_structure.sh
+```
+
+Obs.: Lembre de trocar o nome das variáveis USER e GROUP para o nome do seu usuário.
+
 ## Gerando os certificados TSL e dando permissão
 
+```
+#Cria a pasta certs dentro do ngnix e gera os certificados lá dentro
 mkdir -p srcs/requirements/nginx/certs
 openssl req -x509 -nodes -days 365 \
   -newkey rsa:2048 \
   -keyout srcs/requirements/nginx/certs/privkey.pem \
   -out srcs/requirements/nginx/certs/fullchain.pem \
   -subj "/CN=yufonten.42.fr"
-  
+
+#Dando permissão para os arquivos
 chmod 600 srcs/requirements/nginx/certs/privkey.pem
-
 chmod 644 srcs/requirements/nginx/certs/fullchain.pem
+```
 
-### Caso seja necessário resetar a keygen-ssh (comando para windows)
+## Caso seja necessário resetar a keygen-ssh (comando para windows)
 
 Resetar keygen-ssh no windowns: ssh-keygen -R "[localhost]:4242"
 
