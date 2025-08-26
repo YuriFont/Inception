@@ -13,7 +13,7 @@ services:
       - ./requirements/nginx/certs:/etc/nginx/certs:ro
       - ./requirements/nginx/conf:/etc/nginx/conf.d:ro
     environment:
-      - SERVER_NAME=yufonten.42.fr
+      - SERVER_NAME=${SERVER_NAME}
     networks:
       - inception
     restart: always
