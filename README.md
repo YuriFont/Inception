@@ -197,6 +197,16 @@ sudo chmod +x create_structure.sh
 
 Obs.: Lembre de trocar o nome das variáveis USER e GROUP para o nome do seu usuário.
 
+Dentro da pasta secrets deve ter arquivos .txt contendo apenas as senhas usadas no projeto.
+
+Ex.: db_root_password.txt,  wp_admin_password.txt,  wp_db_password.txt,  wp_user2_password.txt
+
+
+Seu .env deve ter algo parecido com isso:
+
+<img width="622" height="463" alt="image" src="https://github.com/user-attachments/assets/0f098a57-e610-4d9f-ac41-6444f6d8b5e2" />
+
+
 ## Verificando se o os usuário foram criados corretamente
 
 ```
