@@ -3,10 +3,13 @@
 
 # this is read by the standalone daemon and embedded servers
 [server]
-init_file = /etc/mysql/init.sql
 
 # this is only for the mysqld standalone daemon
 [mysqld]
+
+bind-address = 0.0.0.0
+skip-host-cache
+skip-name-resolve
 
 #
 # * Basic Settings
