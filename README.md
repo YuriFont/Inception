@@ -197,6 +197,24 @@ sudo chmod +x create_structure.sh
 
 Obs.: Lembre de trocar o nome das variáveis USER e GROUP para o nome do seu usuário.
 
+## Verificando se o os usuário foram criados corretamente
+
+```
+# Entre no container do MariaDB:
+docker exec -it mariadb bash
+
+
+# Conecte ao banco do WordPress:
+mysql -u root -p
+
+# Selecione o banco do WordPress (geralmente chamado wordpress ou o que você definiu):
+USE wordpress;
+
+
+# Liste os usuários cadastrados:
+SELECT ID, user_login, user_email FROM wp_users;
+```
+
 ## Gerando os certificados TSL e dando permissão
 
 ```
