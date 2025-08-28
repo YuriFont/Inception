@@ -60,6 +60,7 @@ services:
       - MARIADB_USER=${DB_USER}
       - MARIADB_PASSWORD_FILE=/run/secrets/wp_db_password
       - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - DB_USER=${DB_USER}
     secrets:
       - wp_db_password
       - db_root_password
