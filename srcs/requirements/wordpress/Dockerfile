@@ -4,7 +4,8 @@ RUN apt update && apt upgrade && apt install -y \
     php-fpm \
     php-mysqli \
     curl \
-    ca-certificates
+    ca-certificates \
+    default-mysql-client
 
 COPY conf/www.conf /etc/php/8.2/fpm/pool.d/.
 COPY tools/wp-cli_script.sh .
