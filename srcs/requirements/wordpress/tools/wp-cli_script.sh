@@ -3,6 +3,12 @@ set -e
 
 cd /var/www/html
 
+# Espera o MySQL ficar pronto
+while ! mysqladmin ping -h"${DB_HOST}" -u"${DB_USER}" -p"$(cat ${DB_PASSWORD_FILE})" --silent; do
+    echo "Waiting for MariaDB..."
+    sleep 2
+done
+
 # Baixa wp-cli se não existir
 if [ ! -f wp-cli.phar ]; then
   curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
@@ -15,7 +21,7 @@ if [ ! -f wp-config.php ]; then
   ./wp-cli.phar config create \
     --dbname=${DB_NAME} \
     --dbuser=${DB_USER} \
-    --dbpass=password \
+    --dbpass=$(cat ${DB_PASSWORD_FILE}) \
     --dbhost=${DB_HOST} \
     --allow-root
 
