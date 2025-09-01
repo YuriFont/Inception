@@ -25,6 +25,9 @@ touch ./srcs/requirements/nginx/Dockerfile ./srcs/requirements/nginx/.dockerigno
 # Criar arquivos em ./srcs/requirements/wordpress
 touch ./srcs/requirements/wordpress/Dockerfile ./srcs/requirements/wordpress/.dockerignore
 
+# Criar arquivos em ./secrets
+touch ./secrets/db_root_password.txt ./secrets/wp_admin_password.txt ./secrets/wp_db_password.txt ./secrets/wp_user2_password.txt
+
 # Definir permissões e dono para diretórios
 find . -type d -exec chmod 775 {} \;
 find . -type d -exec chown $USER:$GROUP {} \;
