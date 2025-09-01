@@ -7,8 +7,10 @@ services:
     image: nginx
     container_name: nginx
     depends_on:
-      - wordpress
-      - mariadb
+      mariadb:
+        condition: service_started
+      wordpress:
+        condition: service_started
     ports:
       - "443:443"
     volumes:
@@ -25,7 +27,8 @@ services:
     image: wordpress
     container_name: wp-php
     depends_on:
-      - mariadb
+      mariadb:
+        condition: service_started
     volumes:
       - /home/yufonten/data/wordpress:/var/www/html
     environment:
@@ -58,11 +61,10 @@ services:
     volumes:
       - /home/yufonten/data/mariadb:/var/lib/mysql
     environment:
-      - MARIADB_DATABASE=${DB_NAME}
-      - MARIADB_USER=${DB_USER}
-      - MARIADB_PASSWORD_FILE=/run/secrets/wp_db_password
-      - MARIADB_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
-      - DB_USER=${DB_USER}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD_FILE=/run/secrets/wp_db_password
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
     secrets:
       - wp_db_password
       - db_root_password
