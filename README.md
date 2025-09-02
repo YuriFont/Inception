@@ -207,6 +207,428 @@ Seu .env deve ter algo parecido com isso:
 <img width="622" height="463" alt="image" src="https://github.com/user-attachments/assets/0f098a57-e610-4d9f-ac41-6444f6d8b5e2" />
 
 
+Dentro da pasta secrets usei esses arquivos:
+
+<img width="1046" height="51" alt="image" src="https://github.com/user-attachments/assets/b8ceb365-44f2-4f06-af78-961a3af3c2b3" />
+
+## Explicação dos arquivos
+
+### Docker Compose
+
+#### 📦 Serviços:
+#### Nginx -
+
+Build: diretório requirements/nginx/. → você deve ter um Dockerfile lá que instala/configura Nginx.
+
+Args: passa SERVER_NAME (ex.: meusite.com) já na build.
+
+Imagem: chamada nginx (imagem custom sua, não a oficial).
+
+depends_on: sobe só depois de WordPress e MariaDB estarem ativos.
+
+Portas: expõe 443:443 → apenas HTTPS (não tem 80 → provavelmente força redirecionamento).
+
+Volumes:
+
+/home/yufonten/data/wordpress:/var/www/html → compartilha os arquivos do WordPress (o mesmo volume que o container wordpress usa).
+
+./requirements/nginx/conf:/etc/nginx/conf.d:ro → arquivos de configuração customizados (provavelmente .conf do servidor).
+
+Environment: reenvia SERVER_NAME para dentro do container.
+
+Rede: participa da rede inception.
+
+Restart policy: sempre reinicia em caso de falha.
+
+#### Wordpress
+
+wordpress
+
+Build: requirements/wordpress/. → você deve ter um Dockerfile que instala PHP + WordPress CLI + configurações.
+
+Imagem: nomeada wordpress.
+
+Volumes: mesmo caminho do Nginx (/home/yufonten/data/wordpress:/var/www/html) → garante que Nginx lê os arquivos PHP que esse container executa.
+
+Environment:
+
+SERVER_NAME, WP_URL, WP_TITLE → configs do WordPress.
+
+Conexão com o banco:
+
+DB_HOST=${DB_HOST}
+
+DB_NAME=${DB_NAME}
+
+DB_USER=${DB_USER}
+
+DB_PASSWORD_FILE=/run/secrets/wp_db_password
+
+Admin:
+
+WP_ADMIN_USER
+
+WP_ADMIN_PASSWORD_FILE=/run/secrets/wp_admin_password
+
+WP_ADMIN_EMAIL
+
+Usuário secundário:
+
+WP_USER2, WP_USER2_PASSWORD_FILE, WP_USER2_EMAIL, WP_USER2_ROLE
+
+Secrets:
+
+Senhas ficam em /run/secrets/... (bem mais seguro que variáveis de ambiente expostas).
+
+Rede: mesma inception.
+
+Restart: sempre reinicia.
+
+#### Mariadb
+
+Build: requirements/mariadb/. → seu Dockerfile deve personalizar configs e permissões do MariaDB.
+
+Imagem: nomeada mariadb.
+
+Volumes:
+
+/home/yufonten/data/mariadb:/var/lib/mysql → banco de dados persistente.
+
+Environment:
+
+MYSQL_DATABASE=${DB_NAME}
+
+MYSQL_USER=${DB_USER}
+
+MYSQL_PASSWORD_FILE=/run/secrets/wp_db_password
+
+MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+
+Secrets: root password e senha do usuário do WordPress ficam em ../secrets/.
+
+Rede: inception.
+
+Restart: sempre reinicia.
+
+#### 🌐 Rede
+
+inception → rede bridge interna que conecta os três serviços.
+
+Só o nginx está exposto ao host (porta 443).
+
+WordPress e MariaDB não estão acessíveis externamente → segurança maior.
+
+#### 🔑 Secrets
+
+Armazenados fora do compose, em ../secrets/...:
+
+wp_db_password.txt
+
+db_root_password.txt
+
+wp_admin_password.txt
+
+wp_user2_password.txt
+
+Dentro do container, ficam disponíveis em /run/secrets/....
+
+Isso evita expor senhas em variáveis de ambiente (docker inspect não mostra).
+
+#### 🚀 Fluxo de inicialização
+
+MariaDB inicia → cria banco e usuário (via env e secrets).
+
+WordPress (PHP-FPM) inicia:
+
+Conecta no MariaDB.
+
+Usa WP-CLI para instalar e configurar o site (título, admin, usuário secundário).
+
+Nginx inicia:
+
+Lê configs de ./requirements/nginx/conf/.
+
+Usa /var/www/html (compartilhado) para servir os arquivos.
+
+Encaminha requisições PHP para o container wordpress.
+
+O usuário acessa https://SERVER_NAME → Nginx → WordPress → MariaDB.
+
+### Dockerfiles, entrypoints e arquivos de configuração
+
+#### 🌐 Nginx
+Dockerfile:
+```
+# Começa a partir de uma imagem Debian mínima, garantindo controle total do que vai ser instalado.
+FROM debian:12.11
+
+# Atualiza o sistema (apt update && apt upgrade).
+# Instala nginx e openssl (openssl será usado para gerar o certificado SSL).
+# Remove cache do apt para deixar a imagem mais leve.
+RUN apt update && apt upgrade -y && \
+    apt install -y nginx openssl && \
+    rm -rf /var/lib/apt/lists/*
+
+# Cria a pasta onde serão armazenados os certificados SSL.
+RUN mkdir -p /etc/nginx/certs
+
+# Usa um argumento de build (SERVER_NAME) que você define no docker-compose.yml.
+ARG SERVER_NAME=localhost
+
+# Gera um certificado self-signed.
+# Cria dois arquivos:
+# /etc/nginx/certs/privkey.pem → chave privada.
+# /etc/nginx/certs/fullchain.pem → certificado público.
+# Esse certificado vale por 365 dias.
+RUN openssl req -x509 -nodes -days 365 \
+    -newkey rsa:2048 \
+    -keyout /etc/nginx/certs/privkey.pem \
+    -out /etc/nginx/certs/fullchain.pem \
+    -subj "/CN=${SERVER_NAME}"
+
+# Copia o arquivo de configuração customizada (default.conf) para a pasta de configs do nginx.
+COPY conf/default.conf /etc/nginx/conf.d/default.conf
+
+# Expõe a porta 443 (HTTPS)
+EXPOSE 443
+
+# Comando que roda quando o container inicia.
+# daemon off; mantém o nginx em foreground (processo principal), necessário para o Docker gerenciar o container.
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+Configuração do Nginx (default.conf):
+```
+server {
+    # Servidor escuta na porta 443, com SSL e HTTP/2 ativado.
+    listen 443 ssl http2;
+    # O server_name recebe o valor de $SERVER_NAME (passado pelo docker-compose.yml como variável de ambiente/arg).
+    server_name $SERVER_NAME;
+
+    # Define onde estão os certificados gerados no Dockerfile.
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    # Habilita apenas protocolos modernos (TLS 1.2 e 1.3).
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    # O document root do site fica em /var/www/html (o mesmo volume compartilhado com o WordPress).
+    root /var/www/html;
+    # Define a ordem de arquivos de entrada → primeiro procura index.php, depois index.html.
+    index index.php index.html;
+
+    # WordPress: envia requests inexistentes pro index.php
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # Captura arquivos .php.
+    location ~ \.php$ {
+        # 
+        include fastcgi_params;
+        # Define o parâmetro SCRIPT_FILENAME.
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        # Passa a requisição para o PHP-FPM do container wp-php na porta 9000
+        fastcgi_pass wp-php:9000;
+        # Dá um timeout de 60 segundos.
+        fastcgi_read_timeout 60s;
+    }
+}
+```
+
+### 🆆 Wordpress
+Dockerfile:
+```
+FROM debian:12.11
+
+# Instala:
+# php-fpm → o processo que vai interpretar o PHP e responder via FastCGI (porta 9000).
+# php-mysqli → extensão PHP necessária para conectar ao MariaDB.
+# curl e ca-certificates → usados para baixar o wp-cli.phar.
+# default-mysql-client → cliente do MySQL usado no script para checar se o banco está pronto.
+RUN apt update && apt upgrade && apt install -y \
+    php-fpm \
+    php-mysqli \
+    curl \
+    ca-certificates \
+    default-mysql-client
+
+# Substitui a configuração padrão do pool www do PHP-FPM pela sua config customizada.
+COPY conf/www.conf /etc/php/8.2/fpm/pool.d/.
+# Copia o script que vai instalar e configurar o WordPress.
+COPY tools/wp-cli_script.sh .
+# Dá permissão de execução.
+RUN chmod +x wp-cli_script.sh
+
+# Expõe a porta 9000, onde o PHP-FPM ficará escutando (e o nginx vai se conectar).
+EXPOSE 9000
+
+# Quando o container sobe, executa o script que instala/configura o WordPress e depois mantém o PHP-FPM rodando.
+CMD ["./wp-cli_script.sh"]
+```
+
+www.conf:
+```
+# Os processos do PHP-FPM vão rodar com o usuário www-data (mesmo do nginx normalmente).
+user = www-data
+group = www-data
+# Define que o PHP-FPM vai escutar na porta 9000.
+# Importante: como esse é o nome do container (wp-php), o nginx consegue acessar via rede Docker (fastcgi_pass wp-php:9000;).
+listen = wp-php:9000
+# Gerenciamento de processos do PHP-FPM.
+pm = dynamic
+# Até 5 processos simultâneos.
+pm.max_children = 5
+# 2 processos já sobem ao iniciar.
+pm.start_servers = 2
+# Entre 1 e 3 processos podem ficar ociosos.
+pm.min_spare_servers = 1
+pm.max_spare_servers = 3
+```
+
+wp-cli_script.sh:
+```
+# Vai para a pasta onde os arquivos do WordPress ficam (mesmo volume montado com o nginx).
+cd /var/www/html
+
+# Faz um loop até o MariaDB aceitar conexões.
+# Evita que o WordPress tente instalar antes do DB estar disponível.
+while ! mysqladmin ping -h"${DB_HOST}" -u"${DB_USER}" -p"$(cat ${DB_PASSWORD_FILE})" --silent; do
+    echo "Waiting for MariaDB..."
+    sleep 2
+done
+
+# WP-CLI é uma ferramenta de linha de comando para gerenciar WordPress.
+# Baixa e torna executável.
+if [ ! -f wp-cli.phar ]; then
+  curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+  chmod +x wp-cli.phar
+fi
+
+# Só roda se o wp-config.php não existir (primeira vez).
+# Passos:
+# Baixa o core do WordPress.
+# Cria o arquivo de config (wp-config.php) com dados do DB.
+# Instala o WordPress: URL, título, usuário admin, senha e email.
+if [ ! -f wp-config.php ]; then
+  ./wp-cli.phar core download --allow-root
+  ./wp-cli.phar config create \
+    --dbname=${DB_NAME} \
+    --dbuser=${DB_USER} \
+    --dbpass=$(cat ${DB_PASSWORD_FILE}) \
+    --dbhost=${DB_HOST} \
+    --allow-root
+
+  ./wp-cli.phar core install \
+    --url=${WP_URL} \
+    --title=${WP_TITLE} \
+    --admin_user=${WP_ADMIN_USER} \
+    --admin_password=$(cat ${WP_ADMIN_PASSWORD_FILE}) \
+    --admin_email=${WP_ADMIN_EMAIL} \
+    --allow-root
+fi
+
+# Cria o segundo usuário se não existir
+if ! ./wp-cli.phar user get "${WP_USER2}" --allow-root >/dev/null 2>&1; then
+  ./wp-cli.phar user create \
+    "${WP_USER2}" "${WP_USER2_EMAIL}" \
+    --role=${WP_USER2_ROLE} \
+    --user_pass=$(cat ${WP_USER2_PASSWORD_FILE}) \
+    --allow-root
+fi
+
+# Executa o PHP-FPM em foreground (-F) → mantém o container vivo.
+php-fpm8.2 -F
+```
+
+### 🦭 Mariadb
+Dockerfile:
+```
+FROM debian:12.11
+
+# Instala apenas o mariadb-server (sem cliente separado, pois o servidor já vem com utilitários como mysql, mysqladmin e mysql_install_db).
+RUN apt update && apt upgrade && apt install -y \
+    mariadb-server
+
+# Substitui a configuração padrão pelo seu arquivo customizado (50-server.cnf).
+COPY conf/50-server.cnf /etc/mysql/mariadb.conf.d/.
+# Copia o entrypoint script que vai inicializar e configurar o banco.
+COPY tools/mariadb_script.sh .
+
+# Cria o diretório que o mysqld usa para PID/socket e dá permissão de execução no script de inicialização.
+RUN mkdir /run/mysqld && chmod +x mariadb_script.sh
+
+# Expõe a porta padrão do MySQL/MariaDB (3306) para que o WordPress consiga se conectar.
+EXPOSE 3306
+
+# O container vai rodar seu script em vez de subir direto o mysqld
+CMD ["./mariadb_script.sh"]
+```
+
+50-server.cnf:
+```
+# Faz o MariaDB aceitar conexões de qualquer IP (necessário já que o WordPress está em outro container).
+bind-address = 0.0.0.0
+# Define usuário, diretório de dados e temporário.
+user = root
+# /var/lib/mysql é onde montamos o volume persistente no docker-compose.
+datadir = /var/lib/mysql
+tmpdir = /tmp
+# Configura UTF-8 com 4 bytes → suporte completo para emojis e caracteres especiais.
+character-set-server  = utf8mb4
+collation-server      = utf8mb4_general_ci
+```
+
+mariadb_script.sh:
+```
+# Lê as senhas de arquivos secretos (/run/secrets/...), em vez de variáveis normais → mais seguro.
+DB_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
+DB_USER_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
+
+# Se a pasta /var/lib/mysql/mysql já existe, significa que o banco foi inicializado antes.
+# Nesse caso, só sobe o servidor normalmente → garante persistência.
+if [ -d "/var/lib/mysql/mysql" ]; then
+    echo "Banco já inicializado, subindo normalmente..."
+    exec mysqld_safe
+fi
+
+# Cria as tabelas internas (mysql, performance_schema, etc.).
+# Isso acontece só na primeira vez que o volume está vazio.
+echo "Inicializando diretório de dados..."
+mysql_install_db --user=mysql --ldata=/var/lib/mysql
+
+# Roda um servidor temporário, sem escutar em rede (--skip-networking).
+# Só acessível via socket local (/tmp/mysql.sock).
+# Isso evita conexões externas durante a configuração inicial.
+echo "Subindo mysqld temporário..."
+mysqld_safe --skip-networking --socket=/tmp/mysql.sock &
+pid="$!"
+
+# Espera o servidor inicializar
+until mysqladmin ping --socket=/tmp/mysql.sock >/dev/null 2>&1; do
+    sleep 1
+done
+
+# Define senha para o usuário root.
+# Cria o banco definido em DB_NAME.
+# Cria o usuário do WordPress e dá permissões completas nesse banco.
+# O @'%' permite que esse usuário se conecte de qualquer host (essencial, já que o WordPress está em outro container).
+echo "Configurando banco inicial..."
+mysql --socket=/tmp/mysql.sock <<-EOSQL
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASSWORD}';
+
+    CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\`;
+    CREATE USER IF NOT EXISTS '${MYSQL_USER}'@'%' IDENTIFIED BY '${DB_USER_PASSWORD}';
+    GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_USER}'@'%';
+    FLUSH PRIVILEGES;
+EOSQL
+
+# Encerra o servidor temporário.
+mysqladmin --socket=/tmp/mysql.sock -uroot -p"${DB_ROOT_PASSWORD}" shutdown
+
+echo "Banco configurado. Iniciando servidor principal..."
+exec mysqld_safe
+```
+
 ## Verificando se o os usuário foram criados corretamente
 
 ```
