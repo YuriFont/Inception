@@ -629,6 +629,50 @@ echo "Banco configurado. Iniciando servidor principal..."
 exec mysqld_safe
 ```
 
+## Perguntas sobre Docker
+
+### Como o Docker e o Docker Compose funcionam?
+
+De forma resumida, o Docker é uma uma plataforma que permite empacotar e executar aplicações de forma isolada no que chamamos de containers. Para que isso aconteça precisamos criar um arquivo chamado Dockerfile, por meio desse arquivo iremos criar o que no DOcker é chamado de "Imagem". A "Imagem" Docker é como uma "foto" imutável que contém sistema de arquivos, bibliotecas e configurações necessárias para rodar um software. Quando você executa uma imagem, nasce um container, que é um processo rodando de forma isolada do restante do sistema, mas compartilhando o kernel do host.
+
+Já o Docker Compose é uma ferramenta que facilita orquestrar múltiplos containers através de um arquivo YAML. Nele, você define serviços (como app, banco, cache), redes e volumes. Quando você executa docker compose up, o Compose cria automaticamente os volumes e redes necessários, baixa ou builda imagens e inicializa os containers, permitindo que eles se comuniquem pelo nome do serviço. Também é possível adicionar variáveis de ambiente, healthchecks, regras de restart, escalar serviços (--scale) e usar perfis para separar ambientes de dev e produção. Na prática, o Compose transforma uma pilha de comandos docker run complexos em uma configuração simples, centralizada e fácil de reproduzir.
+
+### Qual a diferença entre uma imagem Docker usada com Docker Compose e sem Docker Compose?
+
+De forma prática, a imagem Docker é a mesma, seja usada com Docker Compose ou não. A diferença está apenas em como você gerencia e organiza os containers criados a partir dessa imagem.
+A imagem não muda. Ela é só o “pacote” do seu software.
+O que muda é a forma de executar essa imagem:
+Sem Compose - você administra container por container.
+Com Compose - você administra a aplicação inteira (múltiplos containers) como uma unidade.
+
+### Qual o benefício do Docker em comparação às VMs?
+
+Essa é uma pergunta clássica e creio que tenha sido uns dos motivos para a criação do Docker. Enquanto em uma VM você tem que lidar com todo um sistema operacional rodando de forma virtual no Docker é compartilhado o kernel do host. Deixando o processo mais leve e possibilitando o uso de multiplos serviços ao mesmo tempo, além de outras coisas que irei listar:
+
+#### 1. Consumo de recursos -
+VMs: cada máquina virtual roda um sistema operacional completo (kernel, drivers, serviços), além da aplicação. Isso ocupa muita RAM, CPU e disco.
+Containers (Docker): compartilham o kernel do host, isolando apenas o necessário (processos, rede, filesystem). São muito mais leves e rápidos de iniciar.
+
+#### 2. Velocidade -
+VM: levar minutos para inicializar (boot do SO).
+Container: sobe em segundos ou menos, pois é só um processo isolado.
+
+#### 3. Portabilidade -
+VM: precisa do hipervisor (VirtualBox, VMware, Hyper-V). A imagem da VM é pesada (giga de tamanho) e menos prática de distribuir.
+Container: uma imagem Docker tem apenas o que a aplicação precisa. Pode ser enviada para qualquer host com Docker instalado e rodar de forma idêntica.
+
+#### 4. Isolamento -
+VM: isolamento total, cada uma tem kernel próprio. É mais seguro, mas pesado.
+Container: isolamento a nível de processo. É leve, mas não tão “blindado” quanto uma VM.
+
+#### 5. Gerenciamento -
+VM: você gerencia vários sistemas operacionais, cada um com atualizações, patches e configurações próprias.
+Container: você gerencia apenas as imagens/containers, focando na aplicação e não no SO.
+
+#### 6. Casos de uso -
+VMs: boas quando você precisa de ambientes totalmente diferentes, kernels distintos ou mais segurança (ex.: rodar Linux e Windows no mesmo host).
+Containers (Docker): ideais para microserviços, pipelines de CI/CD, deploy rápido e escalabilidade em nuvem.
+
 ## Verificando se o os usuário foram criados corretamente
 
 ```
