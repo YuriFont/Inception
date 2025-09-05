@@ -5,8 +5,8 @@ set -e
 DB_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
 DB_USER_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
 
-# Se o MySQL já está inicializado, só sobe
-if [ -d "/var/lib/mysql/mysql" ]; then
+# Verificação mais robusta - se o banco de dados específico existe
+if [ -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
     echo "📂 Banco já inicializado, subindo normalmente..."
     exec mysqld_safe
 fi
