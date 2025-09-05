@@ -584,10 +584,10 @@ mariadb_script.sh:
 DB_ROOT_PASSWORD=$(cat "$MYSQL_ROOT_PASSWORD_FILE")
 DB_USER_PASSWORD=$(cat "$MYSQL_PASSWORD_FILE")
 
-# Se a pasta /var/lib/mysql/mysql já existe, significa que o banco foi inicializado antes.
-# Nesse caso, só sobe o servidor normalmente → garante persistência.
-if [ -d "/var/lib/mysql/mysql" ]; then
-    echo "Banco já inicializado, subindo normalmente..."
+# Verifica se o banco de dados definido em DB_NAME já existe no volume, significa que o container foi inicializado antes.
+# Nesse caso, sobe o servidor normalmente, garantindo persistência dos dados.
+if [ -d "/var/lib/mysql/${MYSQL_DATABASE}" ]; then
+    echo "📂 Banco já inicializado, subindo normalmente..."
     exec mysqld_safe
 fi
 
@@ -672,6 +672,60 @@ Container: você gerencia apenas as imagens/containers, focando na aplicação e
 #### 6. Casos de uso -
 VMs: boas quando você precisa de ambientes totalmente diferentes, kernels distintos ou mais segurança (ex.: rodar Linux e Windows no mesmo host).
 Containers (Docker): ideais para microserviços, pipelines de CI/CD, deploy rápido e escalabilidade em nuvem.
+
+## Como rodar o projeto
+
+### Pré-requisitos:
+
+Docker instalado (link de instalação)
+
+Docker Compose instalado (link de instalação)
+
+Make instalado (em geral já vem em sistemas Linux/macOS; para Windows usar WSL ou equivalente)
+
+### Comandos Disponíveis
+
+No diretório raiz do projeto, você pode usar os seguintes comandos:
+
+make ou make inception	- Constrói e sobe todos os containers definidos em srcs/docker-compose.yml em background (-d).
+
+make clean	- Para e remove todos os containers do projeto, mantendo volumes e imagens.
+
+make fclean	- Para e remove containers, imagens, volumes e caches do Docker relacionados ao projeto.
+
+make re	- Executa fclean e depois sobe novamente os containers (make inception).
+
+```
+# Subir o projeto
+make
+
+# Parar os containers
+make clean
+
+# Limpar tudo (containers, volumes, imagens)
+make fclean
+
+# Recriar o projeto do zero
+make re
+```
+
+## Verificações
+
+Garantir que o NGINX está exposto só na porta 443:
+
+```
+docker ps
+```
+
+```
+curl -vk https://login.42.fr
+```
+
+Garantir que o SSL/TLS está ativo:
+
+```
+openssl s_client -connect login.42.fr:443
+```
 
 ## Verificando se o os usuário foram criados corretamente
 
