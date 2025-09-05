@@ -30,7 +30,7 @@ services:
       mariadb:
         condition: service_started
     volumes:
-      - /home/yufonten/data/wordpress:/var/www/html
+      - wordpress_data:/var/www/html
     environment:
       - SERVER_NAME=${SERVER_NAME}
       - WP_URL=${WP_URL}
@@ -59,7 +59,7 @@ services:
     image: mariadb
     container_name: mariadb
     volumes:
-      - /home/yufonten/data/mariadb:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     environment:
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
@@ -74,6 +74,21 @@ services:
 
 networks:
   inception:
+
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/yufonten/data/wordpress
+
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/yufonten/data/mariadb
 
 secrets:
   wp_db_password:
