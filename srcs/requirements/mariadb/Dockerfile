@@ -1,6 +1,6 @@
 FROM debian:12.11
 
-RUN apt update && apt upgrade && apt install -y \
+RUN apt update && apt install -y \
     mariadb-server
 
 # copia configs e entrypoint
